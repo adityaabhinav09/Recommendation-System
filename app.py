@@ -6,13 +6,14 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
+TMDB_API_KEY = os.getenv("TMDB_API")
 
 # Page configuration
 st.set_page_config(
     page_title="Movie Recommender",
     page_icon="🎬",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
 
 # Custom CSS for better styling
@@ -233,10 +234,14 @@ def recommend(movie):
 
 def fetch_poster(movie_id):
     try:
-        response = requests.get(f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={os.getenv('TMDB_API')}")
+        if not TMDB_API_KEY:
+            return "https://via.placeholder.com/500x750?text=No+Poster"
+
+        response = requests.get(
+            f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={TMDB_API_KEY}"
+        )
         data = response.json()
-        # Check if the response was successful and has poster_path
-        if 'poster_path' in data and data['poster_path']:
+        if response.status_code == 200 and 'poster_path' in data and data['poster_path']:
             return "https://image.tmdb.org/t/p/w500/" + data['poster_path']
         else:
             # Return a placeholder image if poster_path is not available
@@ -245,14 +250,16 @@ def fetch_poster(movie_id):
         print(f"Error fetching poster: {e}")
         return "https://via.placeholder.com/500x750?text=No+Poster"
 
-# Loading movies_df and similiarity matrix
+# Loading movies_df and similarity matrix
 movies_list = pickle.load(open("movies.pkl","rb"))
 movies = pd.DataFrame(movies_list)
 similarity = pickle.load(open('similarity_index.pkl','rb'))
 
-# Sidebar for better UX
-st.sidebar.markdown("### 🎯 Settings")
-st.sidebar.markdown("---")
+if not TMDB_API_KEY:
+    st.warning(
+        "TMDB_API is not configured. Poster images will use a placeholder image. "
+        "Set TMDB_API as a secret or environment variable in your deployment."
+    )
 
 # User movie selection with better styling
 st.markdown("### 🎥 Select a Movie")

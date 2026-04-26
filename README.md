@@ -56,6 +56,10 @@ This app lets users select a movie and view the top 5 recommended films along wi
 
 Deploy with Streamlit Cloud, Heroku, or any platform that supports Python web apps.
 
+### Live Demo
+
+- Deployed project: https://recommendation-system-movie02.streamlit.app/
+
 ### Streamlit Cloud
 
 1. Push this project to GitHub.
