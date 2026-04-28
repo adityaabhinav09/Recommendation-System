@@ -253,7 +253,19 @@ def fetch_poster(movie_id):
 # Loading movies_df and similarity matrix
 movies_list = pickle.load(open("movies.pkl","rb"))
 movies = pd.DataFrame(movies_list)
-similarity = pickle.load(open('similarity_index.pkl','rb'))
+
+# Developer selection: choose the similarity index to use.
+
+USE_TRANSFORMER_SIMILARITY = False
+similarity_file = 'similarity_index_transformer.pkl' if USE_TRANSFORMER_SIMILARITY else 'similarity_index.pkl'
+
+try:
+    similarity = pickle.load(open(similarity_file, 'rb'))
+except FileNotFoundError:
+    if USE_TRANSFORMER_SIMILARITY:
+        st.error(f"{similarity_file} not found. Please run generate_similarity_index_transformer.py first or set USE_TRANSFORMER_SIMILARITY = False.")
+        st.stop()
+    raise
 
 if not TMDB_API_KEY:
     st.warning(

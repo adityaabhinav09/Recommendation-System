@@ -50,3 +50,4 @@ venv.bak/
 
 # Streamlit
 .streamlit/
+similarity_index_transformer.pkl
